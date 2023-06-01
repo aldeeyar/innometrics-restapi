@@ -1,4 +1,4 @@
-name: Main Branch Pipeline
+name: Pull Request Pipeline
 
 env:
   AUTH_IMAGE: aldeeyar/innometrics-api:${{ github.sha }}
@@ -78,15 +78,3 @@ jobs:
           tags: ${{ env.AUTH_IMAGE }}
           build-args: |
             JAR_FILE=./target/InnoMetrics-RestAPI.jar
-
-  push_to_dokku:
-    name: Push to Dokku
-    runs-on: ubuntu-latest
-    needs: push_to_registry
-    steps:
-      - name: Push to dokku
-        uses: dokku/github-action@master
-        with:
-          git_remote_url: 'ssh://dokku@84.201.135.131:22/innometrics-api'
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          deploy_docker_image: ${{ env.AUTH_IMAGE }}
