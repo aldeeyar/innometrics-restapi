@@ -342,8 +342,8 @@ public class AdminAPI {
 
             if (myUser != null || Password.length() < 3) {
 
-                myUser.setPassword(Password.substring(1, Password.length() - 2));
-                LOG.info(Password.substring(1, Password.length() - 2));
+                myUser.setPassword(Password.substring(1, Password.length() - 1));
+                LOG.info(Password.substring(1, Password.length() - 1));
 
                 Boolean response = userService.updatePassword(myUser, Token);
 
