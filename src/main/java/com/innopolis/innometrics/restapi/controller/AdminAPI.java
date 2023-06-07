@@ -340,10 +340,9 @@ public class AdminAPI {
         if (UserName != null) {
             User myUser = userService.findByEmail(UserName);
 
-            if (myUser != null) {
+            if (myUser != null || Password.length() < 3) {
 
-                myUser.setPassword(Password);
-                LOG.info("PASSWORD: " + Password);
+                myUser.setPassword(Password.substring(1, Password.length() - 2));
 
                 Boolean response = userService.updatePassword(myUser, Token);
 
