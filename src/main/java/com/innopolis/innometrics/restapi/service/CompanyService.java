@@ -1,24 +1,26 @@
 package com.innopolis.innometrics.restapi.service;
 
-import com.innopolis.innometrics.restapi.DTO.CompanyListRequest;
-import com.innopolis.innometrics.restapi.DTO.CompanyRequest;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
+import com.innopolis.innometrics.restapi.DTO.CompanyListRequest;
+import com.innopolis.innometrics.restapi.DTO.CompanyRequest;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 @Component
 public class CompanyService {
 
     private static Logger LOG = LogManager.getLogger();
-
 
     @Autowired
     private RestTemplate restTemplate;
@@ -48,11 +50,11 @@ public class CompanyService {
         ResponseEntity<CompanyRequest> response = restTemplate.exchange(uri, method, entity, CompanyRequest.class);
 
         HttpStatus status = response.getStatusCode();
-        if (status == HttpStatus.NO_CONTENT) return null;
+        if (status == HttpStatus.NO_CONTENT)
+            return null;
 
         return response.getBody();
     }
-
 
     public CompanyRequest updateCompanyFallback(CompanyRequest companyRequest, String token, Throwable exception) {
         LOG.warn("updateCompanyFallback method used");
@@ -79,9 +81,7 @@ public class CompanyService {
             return false;
         }
 
-
     }
-
 
     @HystrixCommand(commandKey = "findByCompanyId", fallbackMethod = "findByCompanyIdFallback", commandProperties = {
             @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "60000")
@@ -97,7 +97,8 @@ public class CompanyService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(uri)
                 .queryParam("id", id);
 
-        ResponseEntity<CompanyRequest> responseEntity = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, CompanyRequest.class);
+        ResponseEntity<CompanyRequest> responseEntity = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
+                entity, CompanyRequest.class);
 
         return responseEntity.getBody();
 
@@ -133,7 +134,8 @@ public class CompanyService {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(uri);
 
-        ResponseEntity<CompanyListRequest> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, CompanyListRequest.class);
+        ResponseEntity<CompanyListRequest> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
+                entity, CompanyListRequest.class);
 
         HttpStatus status = response.getStatusCode();
 
@@ -141,6 +143,12 @@ public class CompanyService {
     }
 
     public CompanyListRequest getActiveCompaniesFallback(String token, Throwable exception) {
+        LOG.warn("getActiveCompaniesFallback method used");
+        LOG.warn(exception);
+        return new CompanyListRequest();
+    }
+
+    public CompanyListRequest getAllCompaniesFallback(String token, Throwable exception) {
         LOG.warn("getActiveCompaniesFallback method used");
         LOG.warn(exception);
         return new CompanyListRequest();
